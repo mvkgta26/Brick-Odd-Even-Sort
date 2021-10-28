@@ -1,4 +1,4 @@
-# Brick-Odd-Even-Sort
+# Odd-Even-Sort
 ### Parallel CUDA implementation of ODD-EVEN-SORT , a variant of bubble-sort
 
 
