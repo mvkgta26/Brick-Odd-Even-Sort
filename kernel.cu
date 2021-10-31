@@ -15,70 +15,6 @@
 
 
 
-//-------------------------------------------------------CPU TIMER LIBRARY-------------------------------------------------------
-
-#if defined(_MSC_VER) || defined(_MSC_EXTENSIONS)
-#define DELTA_EPOCH_IN_MICROSECS  116444736000000000Ui64 // CORRECT
-#else
-#define DELTA_EPOCH_IN_MICROSECS  116444736000000000ULL // CORRECT
-#endif
-
-struct timezone
-{
-	int  tz_minuteswest; /* minutes W of Greenwich */
-	int  tz_dsttime;     /* type of dst correction */
-};
-
-// Definition of a gettimeofday function
-
-int gettimeofday(struct timeval* tv, struct timezone* tz)
-{
-	// Define a structure to receive the current Windows filetime
-	FILETIME ft;
-
-	// Initialize the present time to 0 and the timezone to UTC
-	unsigned __int64 tmpres = 0;
-	static int tzflag = 0;
-
-	if (NULL != tv)
-	{
-		GetSystemTimeAsFileTime(&ft);
-
-		// The GetSystemTimeAsFileTime returns the number of 100 nanosecond 
-		// intervals since Jan 1, 1601 in a structure. Copy the high bits to 
-		// the 64 bit tmpres, shift it left by 32 then or in the low 32 bits.
-		tmpres |= ft.dwHighDateTime;
-		tmpres <<= 32;
-		tmpres |= ft.dwLowDateTime;
-
-		// Convert to microseconds by dividing by 10
-		tmpres /= 10;
-
-		// The Unix epoch starts on Jan 1 1970.  Need to subtract the difference 
-		// in seconds from Jan 1 1601.
-		tmpres -= DELTA_EPOCH_IN_MICROSECS;
-
-		// Finally change microseconds to seconds and place in the seconds value. 
-		// The modulus picks up the microseconds.
-		tv->tv_sec = (long)(tmpres / 1000000UL);
-		tv->tv_usec = (long)(tmpres % 1000000UL);
-	}
-
-	if (NULL != tz)
-	{
-		if (!tzflag)
-		{
-			_tzset();
-			tzflag++;
-		}
-
-		// Adjust for the timezone west of Greenwich
-		tz->tz_minuteswest = _timezone / 60;
-		tz->tz_dsttime = _daylight;
-	}
-
-	return 0;
-}
 
 //--------------------------------------------------------GPU TIMER LIBRARY--------------------------------------------------------------------
 
@@ -203,7 +139,7 @@ __global__ void odd_even(int* arr, int n)   // n = array size
 	__syncthreads();
 }
 
-
+/*
  void seq_bubble_sort(int* arr, int n)      //In-Place Sequential Bubble Sort
 {
 	int i, k, flag, temp;
@@ -221,17 +157,16 @@ __global__ void odd_even(int* arr, int n)   // n = array size
 		}
 	}
 }
-
+*/
 
 int main(int argc, int** argv)
 {   
 	cudaFree(0);
 
-	struct timeval timediff;
+
 	GpuTimer timer;
 
-	gettimeofday(&timediff, NULL);
-	double t1 = timediff.tv_sec + (timediff.tv_usec / 1000000.0);
+	
 
 	/*
 	int h_arr[] =
@@ -255,12 +190,6 @@ int main(int argc, int** argv)
 	int n = sizeof(h_arr) / sizeof(h_arr[0]);     // n = size of array
 
 
-	/*
-	//--------------------------------------------------------CREATE AND ALLOCATE d_n
-	/int* d_n;
-	cudaMalloc((void**)&d_n, 1 * sizeof(int));
-	cudaMemcpy((void*)d_n, (void*)&n, 1 * sizeof(int), cudaMemcpyHostToDevice);
-	*/
 	
 	//------------------------------------------------------Create and Allocate d_arr[]
 	int* d_arr;
@@ -278,15 +207,10 @@ int main(int argc, int** argv)
 
 	odd_even <<< 1, k, n * sizeof(d_arr[0]) >>> (d_arr, n);    //The third kernel parameter is for the shared memory size in the thread block
 
-	//seq_bubble_sort <<< 1, 1 >>> (d_arr, n);
-		
-	//seq_bubble_sort(h_arr, n);
-	
+
 	timer.Stop();
 	double GPU_time_inter = timer.Elapsed();
 
-	gettimeofday(&timediff, NULL);
-	double t2 = timediff.tv_sec + (timediff.tv_usec / 1000000.0);
 
 
 	cudaMemcpy((void*)h_arr, (void*)d_arr, size, cudaMemcpyDeviceToHost);   //Copy values from d_arr[] to h_arr[] 
@@ -300,16 +224,6 @@ int main(int argc, int** argv)
 	}
 
 
-	//printf("\n Time Elapsed : %g ms", (t2-t1)*1000 );
 
-	printf("\n Time Elapsed : %g ms", GPU_time_inter);
-
-	/*
-	printf("\n \n \n \n");
-	double time_inter = (t2 - t1) * 1000.0;
-	//printf("Time elapsed : %g ms \nReal Time Elapsed : %g ms  ", timer.Elapsed(), time_inter);
-
-	cout << "\n\nGPU Time elapsed : " << GPU_time_inter << " ms\n\nCPU time elapsed :  " << time_inter << " ms" << endl;
-	*/
 	return 0;
 }
