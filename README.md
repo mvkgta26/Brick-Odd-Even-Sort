@@ -13,3 +13,9 @@
 ### Refernces :
   1)https://www.cpp.edu/~gsyoung/CS370/14Sp/parallel_sorting_kla%20Danny.pdf    
   2)Udacity CS344: Intro to Parallel Programming (http://www.udacity.com/wiki/CS344)
+
+
+# IMPORTANT NOTE:
+  #### * Please refer "DESCRIPTION-ODD-EVEN SORT.pdf" document for DETAILED EXPLANATION of the Project
+  #### * "kernel.cu" is the MAIN SOURCE CODE FILE
+  #### * Open "CudaRuntime1.sln" to open the entire project
