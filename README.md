@@ -14,6 +14,8 @@
   1)https://www.cpp.edu/~gsyoung/CS370/14Sp/parallel_sorting_kla%20Danny.pdf    
   2)Udacity CS344: Intro to Parallel Programming (http://www.udacity.com/wiki/CS344)
 
+### Step Complexity : O(n)
+### Work Complexity : O(n^2)
 
 # IMPORTANT NOTE:
   #### * Please refer "DESCRIPTION-ODD-EVEN SORT.pdf" document for DETAILED EXPLANATION of the Project
