@@ -1,7 +1,7 @@
 # Odd-Even-Sort
 ### Parallel CUDA implementation of ODD-EVEN-SORT , a variant of bubble-sort
 
- #### * MAIN: "kernel.cu"
+ #### MAIN: "kernel.cu"
 
 # Core Algorithm:
 ## Array of size n
